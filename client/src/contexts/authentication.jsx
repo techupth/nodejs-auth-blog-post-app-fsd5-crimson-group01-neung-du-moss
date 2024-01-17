@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-
+import axios from "axios";
 const AuthContext = React.createContext();
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function AuthProvider(props) {
   const [state, setState] = useState({
@@ -9,18 +11,37 @@ function AuthProvider(props) {
     user: null,
   });
 
-  const login = () => {
-    // 🐨 Todo: Exercise #4
-    //  ให้เขียน Logic ของ Function `login` ตรงนี้
-    //  Function `login` ทำหน้าที่สร้าง Request ไปที่ API POST /login
-    //  ที่สร้างไว้ด้านบนพร้อมกับ Body ที่กำหนดไว้ในตารางที่ออกแบบไว้
+  // const login = () => {
+  //   const login = async (data) => {
+  //     const result = await axios.post("http://localhost:4000/login", data);
+  //     const token = result.data.token;
+  //     localStorage.setItem("token", token);
+  //     const userDataFromToken = jwtDecode(token);
+  //     setState({ ...state, user: userDataFromToken });
+  //   };
+  // };
+
+  const login = async (data) => {
+    try {
+      const result = await axios.post("http://localhost:4000/login", data);
+      const token = result.data.token;
+
+      // Assuming you have imported jwtDecode at the beginning of your file
+      const userDataFromToken = jwtDecode(token);
+
+      localStorage.setItem("token", token);
+      setState({ ...state, user: userDataFromToken });
+    } catch (error) {
+      console.error("Login error:", error);
+      setState({ ...state, error: "Login failed" });
+    }
   };
 
-  const register = () => {
-    // 🐨 Todo: Exercise #2
-    //  ให้เขียน Logic ของ Function `register` ตรงนี้
-    //  Function register ทำหน้าที่สร้าง Request ไปที่ API POST /register
-    //  ที่สร้างไว้ด้านบนพร้อมกับ Body ที่กำหนดไว้ในตารางที่ออกแบบไว้
+  const navigate = useNavigate();
+
+  const register = async (data) => {
+    await axios.post("http://localhost:4000/register", data);
+    navigate("/login");
   };
 
   const logout = () => {
