@@ -52,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
 
   const token = jwt.sign(
     {
-      id: user.id,
+      id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
     },
